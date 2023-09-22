@@ -13,7 +13,7 @@ import { setLocalStorageItem, getLocalStorageItem } from '../../../components/lo
 export default function ProductPage() {
   const router = useRouter();
   const { productId } = router.query;
-
+ 
   const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -32,17 +32,26 @@ export default function ProductPage() {
     }
   }, [productId]);
 
+  const [number, setNumber] = useState(0);
+
   const addToCart = (product: Product | null) => {
     if (!product) {
       return; // Handle the case where product is null or undefined
     }
+    const getCartItemCount = () => {
+      const cartItems = getLocalStorageItem('cartItems') || [];
+      return cartItems.length;
+    };
+
+    // Update the number when the component mounts
+    setNumber(getCartItemCount());
 
     // Get the existing cart items from localStorage (or initialize an empty array)
     const existingCartItems = getLocalStorageItem('cartItems') || [];
 
     // Add the new product to the cart
     existingCartItems.push(product);
-
+    
     // Save the updated cart items back to localStorage
     setLocalStorageItem('cartItems', existingCartItems);
   };
@@ -55,7 +64,7 @@ export default function ProductPage() {
   return (
     <div>
       <AuthContextProvider>
-        <Navbar />
+        <Navbar number={number}/>
         <div className={styles.productPage}>
           <div className={styles.productContainer}>
             <div className={styles.productImageWrapper}>

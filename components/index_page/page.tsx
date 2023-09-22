@@ -1,15 +1,29 @@
-import { useEffect, useState } from 'react';
-import { Product } from '../../types/product';
-import styles from "./index.module.css";
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import cart_icon from '../../public/shopping_cart.svg';
 import { UserAuth } from "../../src/pages/context/auth-context";
 import { AuthContextProvider } from '../../src/pages/context/auth-context';
+import { setLocalStorageItem, getLocalStorageItem } from '../localStorage';
+import styles from "./index.module.css";
 
-export default function IndexPage() {
+interface Product {
+  _id: string;
+  title: string;
+  price: number;
+  image_link: string;
+  description: string;
+}
+
+interface IndexPageProps {
+  change: () => void | (() => void);
+}
+
+export default function IndexPage({ change }: IndexPageProps) {
   const [products, setProducts] = useState<Product[]>([]);
-  const { user, googleSignIn, logout } = UserAuth();
+  const { user, googleSignIn } = UserAuth();
+  const [searchInput, setSearchInput] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   const handleSignIn = async () => {
     try {
@@ -18,21 +32,19 @@ export default function IndexPage() {
       console.log(error);
     }
   };
-/*
-  const handleAddToCart = (product: Product) => {
-     Check if localStorage is available
-    if (typeof localStorage !== 'undefined') {
-      // Get the current cart data from local storage
-      //const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
 
-      // Add the selected product to the cart
-      const updatedCart = [...existingCart, product];
-
-      // Save the updated cart back to local storage
-      localStorage.setItem('cart', JSON.stringify(updatedCart));
+  const handleAddToCart = (product: Product | null) => {
+    if (!product) {
+      return;
     }
+
+    const existingCartItems = getLocalStorageItem('cartItems') || [];
+    existingCartItems.push(product);
+    setLocalStorageItem('cartItems', existingCartItems);
+
+    change();
   };
-*/
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,12 +59,44 @@ export default function IndexPage() {
     fetchData();
   }, []);
 
+  // Function to filter products based on the search input
+  const filterProducts = () => {
+    if (!searchInput) {
+      setFilteredProducts([]);
+      return;
+    }
+
+    const searchTerm = searchInput.toLowerCase();
+    const filtered = products.filter((product) =>
+      product.title.toLowerCase().includes(searchTerm) ||
+      product.description.toLowerCase().includes(searchTerm)
+    );
+    setFilteredProducts(filtered);
+  };
+
+  // Function to reset the search and show all products
+  const resetSearch = () => {
+    setSearchInput('');
+    setFilteredProducts([]);
+  };
+
   return (
     <div>
       <AuthContextProvider>
+        <div className={styles.search_bar_container}>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+          <button onClick={filterProducts}>Search</button>
+          <button onClick={resetSearch}>Reset</button>
+        </div>
+
         <div className={styles.product_wrapper}>
           <div className={styles.product_space}>
-            {products.map((product) => (
+            {(filteredProducts.length > 0 ? filteredProducts : products).map((product) => (
               <div key={product._id} className={styles.product_container}>
                 <Link href={`/page/${product._id}`} passHref style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div className={styles.product_image_wrapper}>
@@ -72,16 +116,29 @@ export default function IndexPage() {
                     }
                   </p>
                 </Link>
-                <div className={styles.product_icons}>
-                  <div className={styles.cart_icon_wrapper}>
-                    <Image
-                      //onClick={() => handleAddToCart(product)}
-                      className={styles.cart_icon}
-                      src={cart_icon}
-                      alt="Cart Icon"
-                    />
+                {!user ? (
+                  <div className={styles.product_icons}>
+                    <div className={styles.cart_icon_wrapper}>
+                      <Image
+                        onClick={() => handleSignIn()}
+                        className={styles.cart_icon}
+                        src={cart_icon}
+                        alt="Cart Icon"
+                      />
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className={styles.product_icons}>
+                    <div className={styles.cart_icon_wrapper}>
+                      <Image
+                        onClick={() => handleAddToCart(product)}
+                        className={styles.cart_icon}
+                        src={cart_icon}
+                        alt="Cart Icon"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -1,0 +1,19 @@
+.cart-item{
+    display: flex;
+    justify-content: space-between;
+}
+
+.cart-image{
+    display: flex;
+    flex: 1;
+}
+
+.cart-info{
+    display: flex;
+    flex: 1;
+}
+
+
+.product_image{
+    height: 100px;
+}

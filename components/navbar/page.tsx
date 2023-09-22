@@ -10,12 +10,22 @@ import { UserAuth } from "../../src/pages/context/auth-context";
 import { setLocalStorageItem, getLocalStorageItem } from '../../components/localStorage';
 import { Product } from '../../types/product';
 import styles from './navbar.module.css';
+import Link from 'next/link';
 
-export default function Navbar() {
+
+interface NavbarProps {
+  number?: number;
+}
+
+export default function Navbar({ number }: NavbarProps) {
   const router = useRouter();
   const { user, googleSignIn, logOut } = UserAuth();
-  const [number, setNumber] = useState(0);
+  const [cartCount, setCartCount] = useState(number); // Initialize cartCount with the number prop
   const [localUser, setLocalUser] = useState(user);
+
+  useEffect(() => {
+    setCartCount(number); // Update cartCount when the number prop changes
+  }, [number]);
 
   const handleSignIn = async () => {
     try {
@@ -33,13 +43,13 @@ export default function Navbar() {
     };
 
     // Update the number when the component mounts
-    setNumber(getCartItemCount());
+    setCartCount(getCartItemCount());
 
     // Add an event listener to listen for changes in localStorage
     const handleStorageChange = () => {
-      setNumber(getCartItemCount());
+      setCartCount(getCartItemCount());
     };
-  
+
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
@@ -59,7 +69,7 @@ export default function Navbar() {
     setLocalStorageItem('cartItems', existingCartItems);
 
     // Update the cart count
-    setNumber(existingCartItems.length);
+    setCartCount(existingCartItems.length);
   };
 
   const handleSignOut = async () => {
@@ -78,10 +88,7 @@ export default function Navbar() {
     <div>
       <div className={styles.navbar}>
         <div className={styles.left}>
-          <div className={styles.search_bar_container}>
-            <input type="text" placeholder="Search..." className={styles.search_bar}></input>
-            <Image className={styles.search_icon} src={search_icon} alt="Search Icon" />
-          </div>
+          
         </div>
 
         <div className={styles.middle}>
@@ -96,8 +103,10 @@ export default function Navbar() {
           </div>
         ) : (
           <div className={styles.right}>
-            <Image className={styles.cart_icon} src={cart_icon} alt="Cart Icon" />
-            {number > 0 && <span className={styles.cart_count}>{number}</span>}
+            <Link href={`/cart-page/cart_page`} passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Image className={styles.cart_icon} src={cart_icon} alt="Cart Icon" />
+            </Link>
+            {cartCount !== undefined && cartCount > 0 && <span className={styles.cart_count}>{cartCount}</span>}
             <Image onClick={handleSignOut} className={styles.logout_icon} src={logout_icon} alt="Logout Icon" />
           </div>
         )}
