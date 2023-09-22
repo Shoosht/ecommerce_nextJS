@@ -1,0 +1,33 @@
+/* ProductPage.module.css */
+
+.productContainer {
+    display: flex; /* Display children side by side */
+    align-items: center; /* Vertically center align children */
+  }
+  
+  .productImage {
+    flex: 1; /* Take up 1/2 of the available space */
+    padding: 16px; /* Add padding for spacing */
+    width: 100; /* Ensure the image doesn't exceed its container */
+}
+  
+.productDetails {
+    flex: 1; /* Take up 1/2 of the available space */
+    padding: 16px; /* Add padding for spacing */
+}
+  
+  .cartIcon{
+    
+    margin-left: 4px;
+    margin-top: 4px;
+}
+
+
+.cartIconWrapper:hover{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgb(255, 178, 62);
+    cursor: pointer;
+    
+}

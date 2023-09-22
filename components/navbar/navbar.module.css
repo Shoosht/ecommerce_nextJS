@@ -1,0 +1,92 @@
+/* Navbar */
+
+.navbar{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.navbar_border{
+    height: 1px;
+    opacity: 30%;
+    background: radial-gradient(#000000, #ffffff);
+
+}
+
+.nav_logo{
+    font-size: 50px;
+    font-family: 'Playfair Display', serif;
+}
+
+.nav_logo:hover{
+    cursor: pointer;
+}
+
+.left{
+    display: flex;
+    flex: 1;
+
+}
+
+.middle{
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+
+.logo_pic{
+    width: 186px;
+    height: 98px;
+}
+
+.right{
+    display: flex;
+    flex: 1;
+    justify-content: right;
+    align-items: center;
+    padding-right: 30px;
+}
+
+/* Icons */
+
+.search_icon{
+    padding-left: 5px;
+}
+
+.cart_icon{
+    padding-right: 20px;
+}
+
+.login_icon:hover{
+    cursor: pointer;
+}
+
+.logout_icon:hover{
+    cursor: pointer;
+}
+
+.search_icon:hover{
+    cursor: pointer;
+}
+
+.cart_icon:hover{
+    cursor: pointer;
+}
+
+/* Search Bar */
+
+.search_bar{
+    padding-left: 10px;
+    font-size: 18px;
+    width: 250px;
+    height:30px;
+    
+}
+
+.search_bar_container{
+    display: flex;
+    padding-left: 30px;
+    align-items: center;
+}
